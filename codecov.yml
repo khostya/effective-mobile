@@ -12,3 +12,4 @@ ignore:
   - "**/*_test.go"            # glob accepted
   - "./cmd/service/api/*"     # glob accepted
   - "./internal/http/api/*"   # glob accepted
+  - "./pkg/api/*"   # glob accepted
