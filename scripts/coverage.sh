@@ -1,4 +1,4 @@
-DEFAULT_PG_URL="postgres://user:password@localhost:5432"
+DEFAULT_PG_URL="postgres://user:password@localhost:5432/effective?sslmode=disable"
 PG_URL=$DEFAULT_PG_URL
 
 go test  ./internal/... ./pkg/...  -coverprofile unit.coverage.txt
