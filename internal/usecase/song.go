@@ -46,12 +46,12 @@ func (uc Song) Create(ctx context.Context, param dto.CreateSongParam) error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 
 	info, err := api.ParseGetInfoResponse(resp)
 	if err != nil {
 		return err
 	}
-
 	if info.StatusCode() != http.StatusOK {
 		return errors.New("internal error")
 	}

@@ -57,7 +57,6 @@ func newHttpServer(ctx context.Context, cfg config.HTTP, useCases UseCases) (*ht
 		if err := httpserver.Shutdown(); err != nil {
 			log.Fatalf("HTTP handler Shutdown: %s", err)
 		}
-
 	}()
 
 	return httpserver, nil

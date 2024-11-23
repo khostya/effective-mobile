@@ -27,7 +27,7 @@ const (
 	retryAfterInSec = "30"
 )
 
-func (s *server) internalServerError(w http.ResponseWriter, r *http.Request, err error) {
+func (s *server) internalServerError(w http.ResponseWriter, _ *http.Request, err error) {
 	w.WriteHeader(http.StatusInternalServerError)
 	w.Header().Set("Retry-After", retryAfterInSec)
 	if err != nil {

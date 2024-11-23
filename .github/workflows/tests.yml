@@ -20,9 +20,6 @@ jobs:
       - name: Up postgres
         run: make up-postgres
 
-      - name: Install dependencies
-        run: go work sync
-
       - name: Run tests
         run: make run-all-tests
 
