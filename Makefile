@@ -60,7 +60,7 @@ unit-tests:
 .PHONY: run-all-tests
 run-all-tests: unit-tests
 	$(eval PG_URL?=$(DEFAULT_PG_URL))
-	TEST_DATABASE_URL=$(PG_URL)/effective go test ./tests/postgres/... -tags=integration
+	TEST_DATABASE_URL=$(PG_URL) go test ./tests/postgres/... -tags=integration
 
 .PHONY: .generate-mockgen
 generate-mockgen: generate-ifacemaker
