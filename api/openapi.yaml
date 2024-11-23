@@ -1,0 +1,243 @@
+openapi: 3.0.3
+info:
+  title: Music info
+  version: 0.0.1
+paths:
+  /{id}:
+    delete:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ID'
+      responses:
+        '200':
+          description: Ok
+        '500':
+          description: Internal server error
+    put:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/ID"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                song:
+                  $ref: '#/components/schemas/Song'
+                link:
+                  $ref: '#/components/schemas/Link'
+                group:
+                  $ref: '#/components/schemas/Group'
+                text:
+                  $ref: '#/components/schemas/Text'
+      responses:
+        '200':
+          description: Ok
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+  /:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - song
+                - group
+              properties:
+                song:
+                  $ref: '#/components/schemas/Song'
+                group:
+                    $ref: '#/components/schemas/Group'
+      responses:
+        '200':
+          description: Ok
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties:
+                id:
+                  $ref: "#/components/schemas/ID"
+                song:
+                  $ref: '#/components/schemas/Song'
+                link:
+                  $ref: '#/components/schemas/Link'
+                group:
+                  $ref: '#/components/schemas/Group'
+                text:
+                  $ref: '#/components/schemas/Text'
+      responses:
+        '200':
+          description: Ok
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+    get:
+      parameters:
+        - name: group
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: song
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: size
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SongDetail'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+  /verse/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: size
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetVerseResponse'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    SongDetail:
+      required:
+        - releaseDate
+        - text
+        - link
+      type: array
+      items:
+        properties:
+          id:
+            $ref: '#/components/schemas/ID'
+          song:
+            $ref: '#/components/schemas/Song'
+          group:
+            $ref: '#/components/schemas/Group'
+          text:
+            $ref: '#/components/schemas/Text'
+          link:
+            $ref: '#/components/schemas/Link'
+          release_date:
+            $ref: '#/components/schemas/ReleaseDate'
+      properties:
+        releaseDate:
+          type: string
+          example: 16.07.2006
+        text:
+          type: string
+          example: Ooh baby, don't you know I suffer?\nOoh baby, can you hear me moan?\nYou caught me under false pretenses\nHow long before you let me go?\n\nOoh\nYou set my soul alight\nOoh\nYou set my soul alight
+        link:
+          type: string
+          example: https://www.youtube.com/watch?v=Xsp3_a-PMTw
+    UpdateSongRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          example: 53aa35c8-e659-44b2-882f-f6056e443c99
+        song:
+          type: string
+          example: Песня
+        group:
+          type: string
+          example: Песенник
+        link:
+          type: string
+          example: Песенник
+        text:
+          type: string
+          example: Ля ля ля лял ял
+    GetVerseResponse:
+      required:
+        - text
+      type: object
+      properties:
+        text:
+          type: array
+          items:
+            type: string
+            example: ля
+    Song:
+      type: string
+      description: Идентификатор
+      example: Песня
+    Group:
+      type: string
+      description: Идентификатор
+      example: Песня
+    Link:
+      type: string
+      description: Идентификатор
+      example: Песня
+    Text:
+      type: string
+      description: Идентификатор
+      example: Песня
+    ReleaseDate:
+      type: string
+      description: Идентификатор
+      example: 24-09-2003
+    ID:
+      type: string
+      description: Идентификатор
+      example: 53aa35c8-e659-44b2-882f-f6056e443c99

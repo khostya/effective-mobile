@@ -1,0 +1,14 @@
+coverage:
+  status:
+    patch: off
+    project:
+      default:
+        target: 15%
+        threshold: 2%
+        if_ci_failed: error
+
+ignore:
+  - "**/mocks/*"              # glob accepted
+  - "**/*_test.go"            # glob accepted
+  - "./cmd/service/api/*"     # glob accepted
+  - "./internal/http/api/*"   # glob accepted

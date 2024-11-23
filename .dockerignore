@@ -1,0 +1,8 @@
+**/.vscode
+**/.idea
+**/.fleet
+**/vendor.proto
+**/.tmp
+**/bin
+**/vendor
+/data/

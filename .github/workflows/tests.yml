@@ -1,0 +1,30 @@
+name: tests
+
+on:
+  push:
+    branches: ["*"]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.23.1
+
+      - name: Up postgres
+        run: make up-postgres
+
+      - name: Install dependencies
+        run: go work sync
+
+      - name: Run tests
+        run: make run-all-tests
+
+      - name: Down postgres
+        run: make down-postgres

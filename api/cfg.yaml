@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=./configuration-schema.json
+package: api
+output: ./../internal/http/api/server.gen.go
+generate:
+  std-http-server: true
+  client: true
+  models: true
+
+import-mapping:
+  ./components.yaml: github.com/khostya/effective-mobile/internal/http/api/models
+
