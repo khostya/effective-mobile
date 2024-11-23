@@ -55,7 +55,7 @@ migration-create-sql: build-goose
 
 .PHONY: unit-tests
 unit-tests:
-	go test  ./... -coverprofile coverage.txt
+	go test  ./internal/... ./pkg/...
 
 .PHONY: run-all-tests
 run-all-tests: unit-tests
