@@ -4,6 +4,7 @@ package postgres
 
 import (
 	"context"
+	"github.com/brianvoe/gofakeit/v7"
 	"github.com/google/uuid"
 	"github.com/khostya/effective-mobile/internal/domain"
 	"github.com/khostya/effective-mobile/internal/dto"
@@ -36,19 +37,18 @@ func (s *SongsTestSuite) SetupSuite() {
 }
 
 func (s *SongsTestSuite) TestCreate() {
-	_ = s.create()
+	_ = s.create(gofakeit.UUID(), gofakeit.UUID())
 }
 
 func (s *SongsTestSuite) TestCreateDuplicateError() {
-	song := s.create()
+	song := s.create(gofakeit.UUID(), gofakeit.UUID())
 
 	err := s.songRepo.Create(s.ctx, song)
 	require.ErrorIs(s.T(), err, repoerr.ErrDuplicate)
 }
 
 func (s *SongsTestSuite) TestGetByID() {
-	song := s.create()
-	song.Group = nil
+	song := s.create(gofakeit.UUID(), gofakeit.UUID())
 
 	actual, err := s.songRepo.GetByID(s.ctx, song.ID)
 
@@ -57,7 +57,7 @@ func (s *SongsTestSuite) TestGetByID() {
 }
 
 func (s *SongsTestSuite) TestDelete() {
-	song := s.create()
+	song := s.create(gofakeit.UUID(), gofakeit.UUID())
 
 	err := s.songRepo.Delete(s.ctx, song.ID)
 	require.NoError(s.T(), err)
@@ -72,8 +72,7 @@ func (s *SongsTestSuite) TestDeleteNotFound() {
 }
 
 func (s *SongsTestSuite) TestUpdate() {
-	song := s.create()
-	song.Group = nil
+	song := s.create(gofakeit.UUID(), gofakeit.UUID())
 
 	randomString := uuid.New().String()
 	err := s.songRepo.Update(s.ctx, dto.UpdateSongParam{
@@ -122,10 +121,35 @@ func (s *SongsTestSuite) TestUpdateNotFound() {
 	require.ErrorIs(s.T(), err, repoerr.ErrNotFound)
 }
 
-func (s *SongsTestSuite) create() domain.Song {
-	group := s.createGroup()
+func (s *SongsTestSuite) TestGet() {
+	_ = s.create("song1", "group")
+	_ = s.create("song2", "group")
 
-	song := NewSong(group)
+	songs, err := s.songRepo.Get(s.ctx, dto.GetSongsParam{
+		Group: "group",
+		Page: &dto.Page{
+			Page: 1,
+			Size: 10,
+		},
+	})
+	require.NoError(s.T(), err)
+	require.Len(s.T(), songs, 2)
+
+	songs, err = s.songRepo.Get(s.ctx, dto.GetSongsParam{
+		Song: "song1",
+		Page: &dto.Page{
+			Page: 1,
+			Size: 10,
+		},
+	})
+	require.NoError(s.T(), err)
+	require.Len(s.T(), songs, 1)
+}
+
+func (s *SongsTestSuite) create(songTitle string, groupTitle string) domain.Song {
+	group := s.createGroup(groupTitle)
+
+	song := NewSong(songTitle, group)
 
 	err := s.songRepo.Create(s.ctx, song)
 	require.NoError(s.T(), err)
@@ -133,8 +157,8 @@ func (s *SongsTestSuite) create() domain.Song {
 	return song
 }
 
-func (s *SongsTestSuite) createGroup() domain.Group {
-	group := NewGroup()
+func (s *SongsTestSuite) createGroup(groupTitle string) domain.Group {
+	group := NewGroup(groupTitle)
 
 	err := s.groupRepo.CreateOnConflictDoNothing(s.ctx, group)
 	require.NoError(s.T(), err)

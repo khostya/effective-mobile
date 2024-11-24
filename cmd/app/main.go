@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/khostya/effective-mobile/internal/app"
 	"github.com/khostya/effective-mobile/internal/config"
-	"log"
+	"github.com/khostya/effective-mobile/pkg/log/sl"
 	"log/slog"
 	"net/http"
 	"os"
@@ -19,7 +20,9 @@ func main() {
 
 	cfg, err := config.NewConfig()
 	if err != nil {
-		log.Fatalln(err)
+		slog.Error("error", sl.Err(err))
+		fmt.Fprint(os.Stderr, err.Error())
+		os.Exit(1)
 	}
 
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
@@ -28,7 +31,9 @@ func main() {
 	})))
 
 	if err := app.Run(ctx, cfg); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		log.Fatalln(err)
+		slog.Error("error", sl.Err(err))
+		fmt.Fprint(os.Stderr, err.Error())
+		os.Exit(1)
 	}
 }
 

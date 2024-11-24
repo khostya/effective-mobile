@@ -9,10 +9,10 @@ import (
 	"time"
 )
 
-func NewSong(group domain.Group) domain.Song {
+func NewSong(songTitle string, group domain.Group) domain.Song {
 	return domain.Song{
 		ID:          uuid.New(),
-		Song:        gofakeit.UUID(),
+		Song:        songTitle,
 		Group:       &group,
 		Link:        gofakeit.URL(),
 		Text:        domain.Text(gofakeit.UUID()),
@@ -20,8 +20,8 @@ func NewSong(group domain.Group) domain.Song {
 	}
 }
 
-func NewGroup() domain.Group {
+func NewGroup(groupTitle string) domain.Group {
 	return domain.Group{
-		Title: gofakeit.UUID(),
+		Title: groupTitle,
 	}
 }

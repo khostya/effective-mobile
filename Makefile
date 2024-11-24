@@ -7,7 +7,7 @@ LOCAL_BIN:=$(CURDIR)/bin
 
 .PHONY: .up
 up:
-	${COMPOSE} up -d
+	${COMPOSE} up -d --build
 
 .PHONY: .down
 down:

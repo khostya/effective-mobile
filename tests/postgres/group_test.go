@@ -4,6 +4,7 @@ package postgres
 
 import (
 	"context"
+	"github.com/brianvoe/gofakeit/v7"
 	"github.com/khostya/effective-mobile/internal/repo"
 	"github.com/khostya/effective-mobile/internal/repo/transactor"
 	"github.com/stretchr/testify/require"
@@ -30,7 +31,7 @@ func (s *GroupTestSuite) SetupSuite() {
 }
 
 func (s *GroupTestSuite) TestCreateOnConflictDoNothing() {
-	group := NewGroup()
+	group := NewGroup(gofakeit.UUID())
 
 	err := s.groupRepo.CreateOnConflictDoNothing(s.ctx, group)
 	require.NoError(s.T(), err)
@@ -40,7 +41,7 @@ func (s *GroupTestSuite) TestCreateOnConflictDoNothing() {
 }
 
 func (s *GroupTestSuite) TestGetByID() {
-	group := NewGroup()
+	group := NewGroup(gofakeit.UUID())
 
 	err := s.groupRepo.CreateOnConflictDoNothing(s.ctx, group)
 	require.NoError(s.T(), err)

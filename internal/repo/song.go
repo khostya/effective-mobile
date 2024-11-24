@@ -51,12 +51,12 @@ func (s Song) Get(ctx context.Context, param dto.GetSongsParam) ([]domain.Song, 
 	var n uint
 	if param.Group != "" {
 		n += 1
-		query = query.Where(fmt.Sprintf("songs.group = $%v", n), param.Group)
+		query = query.Where(fmt.Sprintf("songs.group_title = $%v", n), param.Group)
 	}
 
 	if param.Song != "" {
 		n += 1
-		query = query.Where(fmt.Sprintf("song = $%v", n), param.Song)
+		query = query.Where(fmt.Sprintf("songs.song = $%v", n), param.Song)
 	}
 
 	if param.Page != nil {

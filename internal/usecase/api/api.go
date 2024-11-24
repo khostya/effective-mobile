@@ -38,7 +38,7 @@ func (s SongInfo) GetInfo(ctx context.Context, param dto.GetSongInfo) (*dto.Song
 		return nil, errors.New("internal error")
 	}
 
-	releaseDate, err := time.Parse(time.RFC3339, info.JSON200.ReleaseDate)
+	releaseDate, err := time.Parse(time.DateOnly, info.JSON200.ReleaseDate)
 	if err != nil {
 		return nil, errors.New("invalid release date")
 	}

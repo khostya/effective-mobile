@@ -49,8 +49,11 @@ func NewSong(song domain.Song) Song {
 
 func NewDomainSong(song Song) domain.Song {
 	return domain.Song{
-		ID:          song.ID,
-		Song:        song.Song,
+		ID:   song.ID,
+		Song: song.Song,
+		Group: &domain.Group{
+			Title: song.GroupTitle,
+		},
 		Link:        song.Link.V,
 		Text:        domain.Text(song.Text.V),
 		ReleaseDate: song.ReleaseDate,

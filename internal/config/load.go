@@ -25,7 +25,7 @@ type (
 	}
 
 	PG struct {
-		URL             string        `env:"PG_URL" env-default:"postgres://user:password@postgres:5431/effective?sslmode=disable"`
+		URL             string        `env:"PG_URL" env-default:"postgres://user:password@localhost:5432/effective?sslmode=disable"`
 		MaxOpenConns    int           `env-required:"true" yaml:"max_open_conns"`
 		MaxIdleConns    int           `env-required:"true" yaml:"max_idle_conns"`
 		ConnMaxIdleTime time.Duration `env-required:"true" yaml:"conn_max_idle_time"`
