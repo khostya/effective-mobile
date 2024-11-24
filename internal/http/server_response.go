@@ -23,13 +23,8 @@ func (s *server) error(w http.ResponseWriter, r *http.Request, status int, err e
 	}
 }
 
-const (
-	retryAfterInSec = "30"
-)
-
 func (s *server) internalServerError(w http.ResponseWriter, _ *http.Request, err error) {
 	w.WriteHeader(http.StatusInternalServerError)
-	w.Header().Set("Retry-After", retryAfterInSec)
 	if err != nil {
 		w.Write([]byte(err.Error()))
 	}

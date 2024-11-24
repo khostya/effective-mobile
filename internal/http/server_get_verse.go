@@ -3,6 +3,7 @@ package http
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+	"github.com/khostya/effective-mobile/internal/dto"
 	"github.com/khostya/effective-mobile/internal/http/api"
 	"net/http"
 )
@@ -21,7 +22,10 @@ func (s *server) GetVerseId(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	text, err := s.useCases.Song.GetByVerse(r.Context(), songID, page)
+	text, err := s.useCases.Song.GetByVerse(r.Context(), dto.GetByVerseParam{
+		ID:   songID,
+		Page: page,
+	})
 	if err != nil {
 		s.error(w, r, http.StatusInternalServerError, err)
 		return
