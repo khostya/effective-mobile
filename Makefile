@@ -64,7 +64,7 @@ run-all-tests: unit-tests
 
 .PHONY: .generate-mockgen
 generate-mockgen: generate-ifacemaker
-	find . -name '*_mock.go' -delete
+	find ./internal -name '*_mock.go' -delete
 	go generate -x -run=mockgen ./internal/...
 
 .PHONY: .bin-deps
@@ -77,4 +77,5 @@ bin-deps:
 generate-ifacemaker:
 	$(LOCAL_BIN)/ifacemaker -f ./internal/usecase/song.go -s Song -i songUseCase -p mock_usecase -c "DONT EDIT: Auto generated" -o ./internal/usecase/mocks/song.go
 	$(LOCAL_BIN)/ifacemaker -f ./internal/repo/song.go -s Song -i songRepo -p mock_repository -c "DONT EDIT: Auto generated" -o ./internal/repo/mocks/song.go
-	$(LOCAL_BIN)/ifacemaker -f ./internal/repo/group.go -s Group -i groupStorage -p mock_repository -c "DONT EDIT: Auto generated" -o ./internal/repo/mocks/group.go
+	$(LOCAL_BIN)/ifacemaker -f ./internal/repo/group.go -s Group -i groupRepo -p mock_repository -c "DONT EDIT: Auto generated" -o ./internal/repo/mocks/group.go
+	$(LOCAL_BIN)/ifacemaker -f ./internal/usecase/api/api.go -s SongInfo -i songApi -p mock_api -c "DONT EDIT: Auto generated" -o ./internal/usecase/api/mocks/api.go

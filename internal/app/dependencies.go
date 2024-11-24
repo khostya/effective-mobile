@@ -4,7 +4,8 @@ import (
 	"github.com/khostya/effective-mobile/internal/repo"
 	"github.com/khostya/effective-mobile/internal/repo/transactor"
 	"github.com/khostya/effective-mobile/internal/usecase"
-	"github.com/khostya/effective-mobile/pkg/api"
+	"github.com/khostya/effective-mobile/internal/usecase/api"
+	httpapi "github.com/khostya/effective-mobile/pkg/api"
 	"github.com/khostya/effective-mobile/pkg/postgres"
 )
 
@@ -12,7 +13,7 @@ func newDependencies(apiEndpoint string, pool *postgres.Pool) (usecase.Dependenc
 	transactor := transactor.NewTransactionManager(pool)
 	pgRepositories := repo.NewRepositories(transactor)
 
-	client, err := api.NewClient(apiEndpoint)
+	client, err := httpapi.NewClient(apiEndpoint)
 	if err != nil {
 		return usecase.Dependencies{}, err
 	}
@@ -20,6 +21,6 @@ func newDependencies(apiEndpoint string, pool *postgres.Pool) (usecase.Dependenc
 	return usecase.Dependencies{
 		Pg:         pgRepositories,
 		Transactor: transactor,
-		Client:     client,
+		Client:     api.NewSongInfo(client),
 	}, nil
 }

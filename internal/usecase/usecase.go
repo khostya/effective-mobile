@@ -1,10 +1,10 @@
+//go:generate mockgen -source ./mocks/api.go -destination=./mocks/song_mock.go -package=mock_repository
 package usecase
 
 import (
 	"context"
+	"github.com/khostya/effective-mobile/internal/dto"
 	"github.com/khostya/effective-mobile/internal/repo"
-	"github.com/khostya/effective-mobile/pkg/api"
-	"net/http"
 )
 
 type (
@@ -14,7 +14,7 @@ type (
 	}
 
 	infoSong interface {
-		GetInfo(ctx context.Context, params *api.GetInfoParams, reqEditors ...api.RequestEditorFn) (*http.Response, error)
+		GetInfo(ctx context.Context, param dto.GetSongInfo) (*dto.SongDetail, error)
 	}
 
 	Dependencies struct {
@@ -34,6 +34,11 @@ func NewUseCases(deps Dependencies) UseCases {
 
 	return UseCases{
 		Deps: deps,
-		Song: NewUserUseCase(pg.Song, pg.Group, deps.Client, deps.Transactor),
+		Song: NewSongUseCase(SongDeps{
+			SongRepo:  pg.Song,
+			GroupRepo: pg.Group,
+			Tm:        deps.Transactor,
+			InfoSong:  deps.Client,
+		}),
 	}
 }

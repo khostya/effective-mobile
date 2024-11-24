@@ -102,15 +102,15 @@ func (mr *MocksongRepoMockRecorder) GetByID(ctx, id any) *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MocksongRepo) Update(ctx context.Context, song domain.Song) error {
+func (m *MocksongRepo) Update(ctx context.Context, param dto.UpdateSongParam) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, song)
+	ret := m.ctrl.Call(m, "Update", ctx, param)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Update indicates an expected call of Update.
-func (mr *MocksongRepoMockRecorder) Update(ctx, song any) *gomock.Call {
+func (mr *MocksongRepoMockRecorder) Update(ctx, param any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MocksongRepo)(nil).Update), ctx, song)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MocksongRepo)(nil).Update), ctx, param)
 }

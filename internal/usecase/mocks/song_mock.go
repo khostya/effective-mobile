@@ -102,15 +102,15 @@ func (mr *MocksongUseCaseMockRecorder) GetByVerse(ctx, id, page any) *gomock.Cal
 }
 
 // Update mocks base method.
-func (m *MocksongUseCase) Update(ctx context.Context, song domain.Song) error {
+func (m *MocksongUseCase) Update(ctx context.Context, param dto.UpdateSongParam) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, song)
+	ret := m.ctrl.Call(m, "Update", ctx, param)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Update indicates an expected call of Update.
-func (mr *MocksongUseCaseMockRecorder) Update(ctx, song any) *gomock.Call {
+func (mr *MocksongUseCaseMockRecorder) Update(ctx, param any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MocksongUseCase)(nil).Update), ctx, song)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MocksongUseCase)(nil).Update), ctx, param)
 }

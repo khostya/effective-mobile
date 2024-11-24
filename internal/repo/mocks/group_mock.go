@@ -17,32 +17,32 @@ import (
 	gomock "go.uber.org/mock/gomock"
 )
 
-// MockgroupStorage is a mock of groupStorage interface.
-type MockgroupStorage struct {
+// MockgroupRepo is a mock of groupRepo interface.
+type MockgroupRepo struct {
 	ctrl     *gomock.Controller
-	recorder *MockgroupStorageMockRecorder
+	recorder *MockgroupRepoMockRecorder
 	isgomock struct{}
 }
 
-// MockgroupStorageMockRecorder is the mock recorder for MockgroupStorage.
-type MockgroupStorageMockRecorder struct {
-	mock *MockgroupStorage
+// MockgroupRepoMockRecorder is the mock recorder for MockgroupRepo.
+type MockgroupRepoMockRecorder struct {
+	mock *MockgroupRepo
 }
 
-// NewMockgroupStorage creates a new mock instance.
-func NewMockgroupStorage(ctrl *gomock.Controller) *MockgroupStorage {
-	mock := &MockgroupStorage{ctrl: ctrl}
-	mock.recorder = &MockgroupStorageMockRecorder{mock}
+// NewMockgroupRepo creates a new mock instance.
+func NewMockgroupRepo(ctrl *gomock.Controller) *MockgroupRepo {
+	mock := &MockgroupRepo{ctrl: ctrl}
+	mock.recorder = &MockgroupRepoMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockgroupStorage) EXPECT() *MockgroupStorageMockRecorder {
+func (m *MockgroupRepo) EXPECT() *MockgroupRepoMockRecorder {
 	return m.recorder
 }
 
 // CreateOnConflictDoNothing mocks base method.
-func (m *MockgroupStorage) CreateOnConflictDoNothing(ctx context.Context, group domain.Group) error {
+func (m *MockgroupRepo) CreateOnConflictDoNothing(ctx context.Context, group domain.Group) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateOnConflictDoNothing", ctx, group)
 	ret0, _ := ret[0].(error)
@@ -50,13 +50,13 @@ func (m *MockgroupStorage) CreateOnConflictDoNothing(ctx context.Context, group 
 }
 
 // CreateOnConflictDoNothing indicates an expected call of CreateOnConflictDoNothing.
-func (mr *MockgroupStorageMockRecorder) CreateOnConflictDoNothing(ctx, group any) *gomock.Call {
+func (mr *MockgroupRepoMockRecorder) CreateOnConflictDoNothing(ctx, group any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOnConflictDoNothing", reflect.TypeOf((*MockgroupStorage)(nil).CreateOnConflictDoNothing), ctx, group)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOnConflictDoNothing", reflect.TypeOf((*MockgroupRepo)(nil).CreateOnConflictDoNothing), ctx, group)
 }
 
 // GetByID mocks base method.
-func (m *MockgroupStorage) GetByID(ctx context.Context, title string) (*domain.Group, error) {
+func (m *MockgroupRepo) GetByID(ctx context.Context, title string) (*domain.Group, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByID", ctx, title)
 	ret0, _ := ret[0].(*domain.Group)
@@ -65,7 +65,7 @@ func (m *MockgroupStorage) GetByID(ctx context.Context, title string) (*domain.G
 }
 
 // GetByID indicates an expected call of GetByID.
-func (mr *MockgroupStorageMockRecorder) GetByID(ctx, title any) *gomock.Call {
+func (mr *MockgroupRepoMockRecorder) GetByID(ctx, title any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockgroupStorage)(nil).GetByID), ctx, title)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockgroupRepo)(nil).GetByID), ctx, title)
 }

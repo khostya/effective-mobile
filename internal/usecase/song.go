@@ -7,10 +7,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/khostya/effective-mobile/internal/domain"
 	"github.com/khostya/effective-mobile/internal/dto"
-	"github.com/khostya/effective-mobile/pkg/api"
-	"net/http"
-	"strings"
-	"time"
 )
 
 type (
@@ -26,6 +22,13 @@ type (
 		CreateOnConflictDoNothing(ctx context.Context, group domain.Group) error
 	}
 
+	SongDeps struct {
+		SongRepo  songRepo
+		GroupRepo groupRepo
+		InfoSong  infoSong
+		Tm        transactionManager
+	}
+
 	Song struct {
 		songRepo  songRepo
 		groupRepo groupRepo
@@ -39,26 +42,12 @@ func (uc Song) DeleteByID(ctx context.Context, id uuid.UUID) error {
 }
 
 func (uc Song) Create(ctx context.Context, param dto.CreateSongParam) error {
-	resp, err := uc.infoSong.GetInfo(ctx, &api.GetInfoParams{
+	info, err := uc.infoSong.GetInfo(ctx, dto.GetSongInfo{
 		Song:  param.Song,
 		Group: param.Group,
 	})
 	if err != nil {
 		return err
-	}
-	defer resp.Body.Close()
-
-	info, err := api.ParseGetInfoResponse(resp)
-	if err != nil {
-		return err
-	}
-	if info.StatusCode() != http.StatusOK {
-		return errors.New("internal error")
-	}
-
-	releaseDate, err := time.Parse(time.RFC3339, info.JSON200.ReleaseDate)
-	if err != nil {
-		return errors.New("invalid release date")
 	}
 
 	return uc.tm.RunRepeatableRead(ctx, func(ctx context.Context) error {
@@ -75,9 +64,9 @@ func (uc Song) Create(ctx context.Context, param dto.CreateSongParam) error {
 			ID:          uuid.New(),
 			Song:        param.Song,
 			Group:       &group,
-			Link:        info.JSON200.Link,
-			Text:        info.JSON200.Text,
-			ReleaseDate: releaseDate,
+			Link:        info.Link,
+			Text:        domain.Text(info.Text),
+			ReleaseDate: info.ReleaseDate,
 		})
 	})
 }
@@ -86,31 +75,32 @@ func (uc Song) Get(ctx context.Context, param dto.GetSongsParam) ([]domain.Song,
 	return uc.songRepo.Get(ctx, param)
 }
 
-func (uc Song) GetByVerse(ctx context.Context, id uuid.UUID, page dto.Page) ([]string, error) {
-	song, err := uc.songRepo.GetByID(ctx, id)
+func (uc Song) GetByVerse(ctx context.Context, param dto.GetByVerseParam) ([]string, error) {
+	song, err := uc.songRepo.GetByID(ctx, param.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	verses := strings.Split(song.Text, "\n\n")
-	left := page.Offset()
-	if left >= uint(len(verses)) {
-		return nil, errors.New("out of range")
+	verses, err := song.Text.GetVerse(param.Page)
+	if err == nil {
+		return verses, nil
 	}
 
-	right := int(left + page.Size)
-	return verses[left:min(len(verses), right)], nil
+	if errors.Is(err, domain.ErrOutOfRange) {
+		return []string{}, ErrOutOfRange
+	}
+	return nil, err
 }
 
 func (uc Song) Update(ctx context.Context, param dto.UpdateSongParam) error {
 	return uc.songRepo.Update(ctx, param)
 }
 
-func NewUserUseCase(songRepo songRepo, groupRepo groupRepo, infoSong infoSong, tm transactionManager) Song {
+func NewSongUseCase(deps SongDeps) Song {
 	return Song{
-		songRepo:  songRepo,
-		infoSong:  infoSong,
-		groupRepo: groupRepo,
-		tm:        tm,
+		songRepo:  deps.SongRepo,
+		infoSong:  deps.InfoSong,
+		groupRepo: deps.GroupRepo,
+		tm:        deps.Tm,
 	}
 }

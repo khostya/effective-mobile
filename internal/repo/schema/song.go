@@ -42,7 +42,7 @@ func NewSong(song domain.Song) Song {
 		Song:        song.Song,
 		GroupTitle:  title,
 		Link:        nullIfDefault(song.Link),
-		Text:        nullIfDefault(song.Text),
+		Text:        nullIfDefault(string(song.Text)),
 		ReleaseDate: song.ReleaseDate,
 	}
 }
@@ -52,7 +52,7 @@ func NewDomainSong(song Song) domain.Song {
 		ID:          song.ID,
 		Song:        song.Song,
 		Link:        song.Link.V,
-		Text:        song.Text.V,
+		Text:        domain.Text(song.Text.V),
 		ReleaseDate: song.ReleaseDate,
 	}
 }

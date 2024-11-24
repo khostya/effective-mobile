@@ -15,7 +15,7 @@ func NewSong(group domain.Group) domain.Song {
 		Song:        gofakeit.UUID(),
 		Group:       &group,
 		Link:        gofakeit.URL(),
-		Text:        gofakeit.UUID(),
+		Text:        domain.Text(gofakeit.UUID()),
 		ReleaseDate: time.Now(),
 	}
 }

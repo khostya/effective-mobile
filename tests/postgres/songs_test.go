@@ -39,6 +39,13 @@ func (s *SongsTestSuite) TestCreate() {
 	_ = s.create()
 }
 
+func (s *SongsTestSuite) TestCreateDuplicateError() {
+	song := s.create()
+
+	err := s.songRepo.Create(s.ctx, song)
+	require.ErrorIs(s.T(), err, repoerr.ErrDuplicate)
+}
+
 func (s *SongsTestSuite) TestGetByID() {
 	song := s.create()
 	song.Group = nil
@@ -59,6 +66,11 @@ func (s *SongsTestSuite) TestDelete() {
 	require.ErrorIs(s.T(), err, repoerr.ErrNotFound)
 }
 
+func (s *SongsTestSuite) TestDeleteNotFound() {
+	err := s.songRepo.Delete(s.ctx, uuid.New())
+	require.ErrorIs(s.T(), err, repoerr.ErrNotFound)
+}
+
 func (s *SongsTestSuite) TestUpdate() {
 	song := s.create()
 	song.Group = nil
@@ -74,7 +86,7 @@ func (s *SongsTestSuite) TestUpdate() {
 
 	song.Song = randomString
 	song.Link = randomString
-	song.Text = randomString
+	song.Text = domain.Text(randomString)
 
 	actual, err := s.songRepo.GetByID(s.ctx, song.ID)
 	require.NoError(s.T(), err)
@@ -92,11 +104,22 @@ func (s *SongsTestSuite) TestUpdate() {
 	require.NoError(s.T(), err)
 
 	song.Link = empty
-	song.Text = empty
+	song.Text = domain.Text(empty)
 
 	actual, err = s.songRepo.GetByID(s.ctx, song.ID)
 	require.NoError(s.T(), err)
 	require.EqualExportedValues(s.T(), song, actual)
+}
+
+func (s *SongsTestSuite) TestUpdateNotFound() {
+	randomString := uuid.New().String()
+	err := s.songRepo.Update(s.ctx, dto.UpdateSongParam{
+		ID:   uuid.New(),
+		Song: &randomString,
+		Text: &randomString,
+		Link: &randomString,
+	})
+	require.ErrorIs(s.T(), err, repoerr.ErrNotFound)
 }
 
 func (s *SongsTestSuite) create() domain.Song {

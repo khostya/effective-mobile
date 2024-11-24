@@ -60,8 +60,12 @@ func (s Song) Get(ctx context.Context, param dto.GetSongsParam) ([]domain.Song, 
 	}
 
 	if param.Page != nil {
+		offset, err := param.Page.Offset()
+		if err != nil {
+			return nil, err
+		}
 		query = query.
-			Offset(uint64(param.Page.Offset())).
+			Offset(uint64(offset)).
 			Limit(uint64(param.Page.Limit()))
 	}
 

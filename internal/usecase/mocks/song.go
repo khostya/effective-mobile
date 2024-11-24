@@ -16,5 +16,5 @@ type songUseCase interface {
 	Create(ctx context.Context, param dto.CreateSongParam) error
 	Get(ctx context.Context, param dto.GetSongsParam) ([]domain.Song, error)
 	GetByVerse(ctx context.Context, id uuid.UUID, page dto.Page) ([]string, error)
-	Update(ctx context.Context, song domain.Song) error
+	Update(ctx context.Context, param dto.UpdateSongParam) error
 }

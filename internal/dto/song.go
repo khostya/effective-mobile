@@ -1,6 +1,10 @@
 package dto
 
-import "github.com/google/uuid"
+import (
+	"errors"
+	"github.com/google/uuid"
+	"time"
+)
 
 type (
 	Page struct {
@@ -25,10 +29,28 @@ type (
 		Text *string
 		Link *string
 	}
+
+	GetSongInfo struct {
+		Song, Group string
+	}
+
+	SongDetail struct {
+		ReleaseDate time.Time
+		Link        string
+		Text        string
+	}
+
+	GetByVerseParam struct {
+		ID   uuid.UUID
+		Page Page
+	}
 )
 
-func (p Page) Offset() uint {
-	return min(0, p.Page-1) * p.Size
+func (p Page) Offset() (uint, error) {
+	if p.Page <= 0 {
+		return 0, errors.New("page out of range")
+	}
+	return (p.Page - 1) * p.Size, nil
 }
 
 func (p Page) Limit() uint {

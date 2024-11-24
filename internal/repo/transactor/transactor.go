@@ -1,3 +1,4 @@
+//go:generate mockgen -source ./transactor.go -destination=./mocks/mock_transactor.go -package=mock_transactor
 package transactor
 
 import (
