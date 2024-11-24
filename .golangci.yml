@@ -254,16 +254,5 @@ issues:
   # Set to 0 to disable.
   # Default: 3
   max-same-issues: 50
-
-  exclude-rules:
-    - source: "(noinspection|TODO)"
-      linters: [ godot ]
-    - path: "_test\\.go"
-      linters:
-        - bodyclose
-        - dupl
-        - funlen
-        - goconst
-        - gosec
-        - noctx
-        - wrapcheck
+  exclude-files:
+    - _test.go
