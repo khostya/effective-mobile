@@ -73,6 +73,11 @@ paths:
           required: false
           schema:
             type: string
+        - name: link
+          in: query
+          required: false
+          schema:
+            type: string
         - name: song
           in: query
           required: false

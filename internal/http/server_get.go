@@ -14,11 +14,13 @@ func (s *server) Get(w http.ResponseWriter, r *http.Request) {
 
 	song := r.URL.Query().Get(songParam)
 	group := r.URL.Query().Get(groupParam)
+	link := r.URL.Query().Get(linkParam)
 
 	songs, err := s.useCases.Song.Get(r.Context(), dto.GetSongsParam{
 		Page:  &page,
 		Song:  song,
 		Group: group,
+		Link:  link,
 	})
 	if err != nil {
 		s.error(w, r, http.StatusInternalServerError, err)

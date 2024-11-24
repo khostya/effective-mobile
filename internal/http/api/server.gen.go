@@ -65,6 +65,7 @@ type Text = string
 // GetParams defines parameters for Get.
 type GetParams struct {
 	Group *string `form:"group,omitempty" json:"group,omitempty"`
+	Link  *string `form:"link,omitempty" json:"link,omitempty"`
 	Song  *string `form:"song,omitempty" json:"song,omitempty"`
 	Page  int     `form:"page" json:"page"`
 	Size  int     `form:"size" json:"size"`
@@ -308,6 +309,22 @@ func NewGetRequest(server string, params *GetParams) (*http.Request, error) {
 		if params.Group != nil {
 
 			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "group", runtime.ParamLocationQuery, *params.Group); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Link != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "link", runtime.ParamLocationQuery, *params.Link); err != nil {
 				return nil, err
 			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
 				return nil, err
@@ -929,6 +946,14 @@ func (siw *ServerInterfaceWrapper) Get(w http.ResponseWriter, r *http.Request) {
 	err = runtime.BindQueryParameter("form", true, false, "group", r.URL.Query(), &params.Group)
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "group", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "link" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "link", r.URL.Query(), &params.Link)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "link", Err: err})
 		return
 	}
 

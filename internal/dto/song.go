@@ -21,6 +21,7 @@ type (
 		Page  *Page
 		Song  string
 		Group string
+		Link  string
 	}
 
 	UpdateSongParam struct {

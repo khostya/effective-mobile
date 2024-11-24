@@ -59,6 +59,11 @@ func (s Song) Get(ctx context.Context, param dto.GetSongsParam) ([]domain.Song, 
 		query = query.Where(fmt.Sprintf("songs.song = $%v", n), param.Song)
 	}
 
+	if param.Link != "" {
+		n += 1
+		query = query.Where(fmt.Sprintf("songs.link = $%v", n), param.Link)
+	}
+
 	if param.Page != nil {
 		offset, err := param.Page.Offset()
 		if err != nil {

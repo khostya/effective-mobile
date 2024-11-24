@@ -131,6 +131,7 @@ func (s *SongsTestSuite) TestGet() {
 			Page: 1,
 			Size: 10,
 		},
+		Link: url,
 	})
 	require.NoError(s.T(), err)
 	require.Len(s.T(), songs, 2)

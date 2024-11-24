@@ -86,6 +86,7 @@ const (
 	idParam    = "id"
 	songParam  = "song"
 	groupParam = "group"
+	linkParam  = "link"
 )
 
 func parsePage(r *http.Request) (dto.Page, error) {

@@ -9,12 +9,16 @@ import (
 	"time"
 )
 
+const (
+	url = "https://github.com/khostya/effective-mobile"
+)
+
 func NewSong(songTitle string, group domain.Group) domain.Song {
 	return domain.Song{
 		ID:          uuid.New(),
 		Song:        songTitle,
 		Group:       &group,
-		Link:        gofakeit.URL(),
+		Link:        url,
 		Text:        domain.Text(gofakeit.UUID()),
 		ReleaseDate: time.Now(),
 	}
