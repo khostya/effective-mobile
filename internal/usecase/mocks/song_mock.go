@@ -87,18 +87,18 @@ func (mr *MocksongUseCaseMockRecorder) Get(ctx, param any) *gomock.Call {
 }
 
 // GetByVerse mocks base method.
-func (m *MocksongUseCase) GetByVerse(ctx context.Context, id uuid.UUID, page dto.Page) ([]string, error) {
+func (m *MocksongUseCase) GetByVerse(ctx context.Context, param dto.GetByVerseParam) ([]string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByVerse", ctx, id, page)
+	ret := m.ctrl.Call(m, "GetByVerse", ctx, param)
 	ret0, _ := ret[0].([]string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetByVerse indicates an expected call of GetByVerse.
-func (mr *MocksongUseCaseMockRecorder) GetByVerse(ctx, id, page any) *gomock.Call {
+func (mr *MocksongUseCaseMockRecorder) GetByVerse(ctx, param any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByVerse", reflect.TypeOf((*MocksongUseCase)(nil).GetByVerse), ctx, id, page)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByVerse", reflect.TypeOf((*MocksongUseCase)(nil).GetByVerse), ctx, param)
 }
 
 // Update mocks base method.

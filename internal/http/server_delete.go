@@ -7,7 +7,7 @@ import (
 )
 
 func (s *server) DeleteId(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
+	id := chi.URLParam(r, idParam)
 	songID, err := uuid.Parse(id)
 	if err != nil {
 		s.error(w, r, http.StatusBadRequest, err)

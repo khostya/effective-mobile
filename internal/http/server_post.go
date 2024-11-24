@@ -15,6 +15,11 @@ func (s *server) PostCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if req.Group == "" || req.Song == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 	err = s.useCases.Song.Create(r.Context(), dto.CreateSongParam{
 		Song:  req.Song,
 		Group: req.Group,

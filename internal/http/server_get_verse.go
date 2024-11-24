@@ -9,13 +9,13 @@ import (
 )
 
 func (s *server) GetVerseId(w http.ResponseWriter, r *http.Request) {
-	page, err := s.parsePage(r)
+	page, err := parsePage(r)
 	if err != nil {
 		s.error(w, r, http.StatusBadRequest, err)
 		return
 	}
 
-	id := chi.URLParam(r, "id")
+	id := chi.URLParam(r, idParam)
 	songID, err := uuid.Parse(id)
 	if err != nil {
 		s.error(w, r, http.StatusBadRequest, err)

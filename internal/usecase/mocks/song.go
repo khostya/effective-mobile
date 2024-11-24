@@ -15,6 +15,6 @@ type songUseCase interface {
 	DeleteByID(ctx context.Context, id uuid.UUID) error
 	Create(ctx context.Context, param dto.CreateSongParam) error
 	Get(ctx context.Context, param dto.GetSongsParam) ([]domain.Song, error)
-	GetByVerse(ctx context.Context, id uuid.UUID, page dto.Page) ([]string, error)
+	GetByVerse(ctx context.Context, param dto.GetByVerseParam) ([]string, error)
 	Update(ctx context.Context, param dto.UpdateSongParam) error
 }

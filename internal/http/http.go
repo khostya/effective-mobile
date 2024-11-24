@@ -33,16 +33,7 @@ func newHttpServer(ctx context.Context, cfg config.HTTP, useCases UseCases) (*ht
 		return nil, err
 	}
 
-	router := chi.NewRouter()
-	router.Use(logging)
-	router.Use(cors.AllowAll().Handler)
-
-	router.Delete("/{id}", server.DeleteId)
-	router.Post("/", server.PostCreate)
-	router.Put("/{id}", server.Put)
-	router.Get("/verse/{id}", server.GetVerseId)
-	router.Get("/", server.Get)
-
+	router := getRouter(server)
 	httpserver := httpserver.New(
 		router,
 		httpserver.Port(cfg.Port),
@@ -62,6 +53,20 @@ func newHttpServer(ctx context.Context, cfg config.HTTP, useCases UseCases) (*ht
 	return httpserver, nil
 }
 
+func getRouter(server *server) chi.Router {
+	router := chi.NewRouter()
+	router.Use(logging)
+	router.Use(cors.AllowAll().Handler)
+
+	router.Delete("/{id}", server.DeleteId)
+	router.Post("/", server.PostCreate)
+	router.Put("/{id}", server.Put)
+	router.Get("/verse/{id}", server.GetVerseId)
+	router.Get("/", server.Get)
+
+	return router
+}
+
 func logging(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		reqDump, err := httputil.DumpRequest(r, true)
@@ -75,15 +80,23 @@ func logging(next http.Handler) http.Handler {
 	})
 }
 
-func (s *server) parsePage(r *http.Request) (dto.Page, error) {
-	page := r.URL.Query().Get("page")
+const (
+	pageParam  = "page"
+	sizeParam  = "size"
+	idParam    = "id"
+	songParam  = "song"
+	groupParam = "group"
+)
+
+func parsePage(r *http.Request) (dto.Page, error) {
+	page := r.URL.Query().Get(pageParam)
 
 	pageInt, err := strconv.ParseUint(page, 10, 32)
 	if err != nil {
 		return dto.Page{}, err
 	}
 
-	size := r.URL.Query().Get("size")
+	size := r.URL.Query().Get(sizeParam)
 	sizeInt, err := strconv.ParseUint(size, 10, 32)
 	if err != nil {
 		return dto.Page{}, err

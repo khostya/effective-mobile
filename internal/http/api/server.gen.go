@@ -79,24 +79,6 @@ type PostJSONBody struct {
 	Song Song `json:"song"`
 }
 
-// PutJSONBody defines parameters for Put.
-type PutJSONBody struct {
-	// Group Идентификатор
-	Group *Group `json:"group,omitempty"`
-
-	// Id Идентификатор
-	Id ID `json:"id"`
-
-	// Link Идентификатор
-	Link *Link `json:"link,omitempty"`
-
-	// Song Идентификатор
-	Song *Song `json:"song,omitempty"`
-
-	// Text Идентификатор
-	Text *Text `json:"text,omitempty"`
-}
-
 // GetVerseIdParams defines parameters for GetVerseId.
 type GetVerseIdParams struct {
 	Page int `form:"page" json:"page"`
@@ -120,9 +102,6 @@ type PutIdJSONBody struct {
 
 // PostJSONRequestBody defines body for Post for application/json ContentType.
 type PostJSONRequestBody PostJSONBody
-
-// PutJSONRequestBody defines body for Put for application/json ContentType.
-type PutJSONRequestBody PutJSONBody
 
 // PutIdJSONRequestBody defines body for PutId for application/json ContentType.
 type PutIdJSONRequestBody PutIdJSONBody
@@ -208,11 +187,6 @@ type ClientInterface interface {
 
 	Post(ctx context.Context, body PostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// PutWithBody request with any body
-	PutWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	Put(ctx context.Context, body PutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// GetVerseId request
 	GetVerseId(ctx context.Context, id string, params *GetVerseIdParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -251,30 +225,6 @@ func (c *Client) PostWithBody(ctx context.Context, contentType string, body io.R
 
 func (c *Client) Post(ctx context.Context, body PostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PutWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPutRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) Put(ctx context.Context, body PutJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPutRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -453,46 +403,6 @@ func NewPostRequestWithBody(server string, contentType string, body io.Reader) (
 	}
 
 	req, err := http.NewRequest("POST", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewPutRequest calls the generic Put builder with application/json body
-func NewPutRequest(server string, body PutJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPutRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewPutRequestWithBody generates requests for Put with any type of body
-func NewPutRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("PUT", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -698,11 +608,6 @@ type ClientWithResponsesInterface interface {
 
 	PostWithResponse(ctx context.Context, body PostJSONRequestBody, reqEditors ...RequestEditorFn) (*PostResponse, error)
 
-	// PutWithBodyWithResponse request with any body
-	PutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutResponse, error)
-
-	PutWithResponse(ctx context.Context, body PutJSONRequestBody, reqEditors ...RequestEditorFn) (*PutResponse, error)
-
 	// GetVerseIdWithResponse request
 	GetVerseIdWithResponse(ctx context.Context, id string, params *GetVerseIdParams, reqEditors ...RequestEditorFn) (*GetVerseIdResponse, error)
 
@@ -752,27 +657,6 @@ func (r PostResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PostResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type PutResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// Status returns HTTPResponse.Status
-func (r PutResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PutResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -869,23 +753,6 @@ func (c *ClientWithResponses) PostWithResponse(ctx context.Context, body PostJSO
 	return ParsePostResponse(rsp)
 }
 
-// PutWithBodyWithResponse request with arbitrary body returning *PutResponse
-func (c *ClientWithResponses) PutWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutResponse, error) {
-	rsp, err := c.PutWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePutResponse(rsp)
-}
-
-func (c *ClientWithResponses) PutWithResponse(ctx context.Context, body PutJSONRequestBody, reqEditors ...RequestEditorFn) (*PutResponse, error) {
-	rsp, err := c.Put(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePutResponse(rsp)
-}
-
 // GetVerseIdWithResponse request returning *GetVerseIdResponse
 func (c *ClientWithResponses) GetVerseIdWithResponse(ctx context.Context, id string, params *GetVerseIdParams, reqEditors ...RequestEditorFn) (*GetVerseIdResponse, error) {
 	rsp, err := c.GetVerseId(ctx, id, params, reqEditors...)
@@ -963,22 +830,6 @@ func ParsePostResponse(rsp *http.Response) (*PostResponse, error) {
 	return response, nil
 }
 
-// ParsePutResponse parses an HTTP response from a PutWithResponse call
-func ParsePutResponse(rsp *http.Response) (*PutResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PutResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	return response, nil
-}
-
 // ParseGetVerseIdResponse parses an HTTP response from a GetVerseIdWithResponse call
 func ParseGetVerseIdResponse(rsp *http.Response) (*GetVerseIdResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -1045,9 +896,6 @@ type ServerInterface interface {
 
 	// (POST /)
 	Post(w http.ResponseWriter, r *http.Request)
-
-	// (PUT /)
-	Put(w http.ResponseWriter, r *http.Request)
 
 	// (GET /verse/{id})
 	GetVerseId(w http.ResponseWriter, r *http.Request, id string, params GetVerseIdParams)
@@ -1138,20 +986,6 @@ func (siw *ServerInterfaceWrapper) Post(w http.ResponseWriter, r *http.Request) 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.Post(w, r)
-	}))
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler.ServeHTTP(w, r)
-}
-
-// Put operation middleware
-func (siw *ServerInterfaceWrapper) Put(w http.ResponseWriter, r *http.Request) {
-
-	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.Put(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1391,7 +1225,6 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 
 	m.HandleFunc("GET "+options.BaseURL+"/", wrapper.Get)
 	m.HandleFunc("POST "+options.BaseURL+"/", wrapper.Post)
-	m.HandleFunc("PUT "+options.BaseURL+"/", wrapper.Put)
 	m.HandleFunc("GET "+options.BaseURL+"/verse/{id}", wrapper.GetVerseId)
 	m.HandleFunc("DELETE "+options.BaseURL+"/{id}", wrapper.DeleteId)
 	m.HandleFunc("PUT "+options.BaseURL+"/{id}", wrapper.PutId)

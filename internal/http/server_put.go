@@ -10,14 +10,14 @@ import (
 )
 
 func (s *server) Put(w http.ResponseWriter, r *http.Request) {
-	var req api.PutJSONBody
+	var req api.PutIdJSONBody
 	err := render.DecodeJSON(r.Body, &req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	songID, err := uuid.Parse(chi.URLParam(r, "id"))
+	songID, err := uuid.Parse(chi.URLParam(r, idParam))
 	if err != nil {
 		s.error(w, r, http.StatusBadRequest, err)
 		return
