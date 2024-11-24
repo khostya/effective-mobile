@@ -240,6 +240,7 @@ func TestSong_Create(t *testing.T) {
 					Create(gomock.Any(), gomock.Any()).
 					Return(nil).
 					Times(1)
+				m.mockTransactor.EXPECT().Unwrap(nil).Times(1).Return(nil)
 				m.mockTransactor.EXPECT().RunRepeatableRead(gomock.Any(), gomock.Any()).Times(1).
 					DoAndReturn(func(ctx context.Context, transaction func(ctx context.Context) error) error {
 						return transaction(ctx)
@@ -276,6 +277,7 @@ func TestSong_Create(t *testing.T) {
 					CreateOnConflictDoNothing(gomock.Any(), gomock.Any()).
 					Return(errMock).
 					Times(1)
+				m.mockTransactor.EXPECT().Unwrap(errMock).Times(1).Return(errMock)
 				m.mockTransactor.EXPECT().RunRepeatableRead(gomock.Any(), gomock.Any()).Times(1).
 					DoAndReturn(func(ctx context.Context, transaction func(ctx context.Context) error) error {
 						return transaction(ctx)
@@ -302,6 +304,7 @@ func TestSong_Create(t *testing.T) {
 					Create(gomock.Any(), gomock.Any()).
 					Return(errMock).
 					Times(1)
+				m.mockTransactor.EXPECT().Unwrap(errMock).Times(1).Return(errMock)
 				m.mockTransactor.EXPECT().RunRepeatableRead(gomock.Any(), gomock.Any()).Times(1).
 					DoAndReturn(func(ctx context.Context, transaction func(ctx context.Context) error) error {
 						return transaction(ctx)

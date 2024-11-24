@@ -50,7 +50,7 @@ func (uc Song) Create(ctx context.Context, param dto.CreateSongParam) error {
 		return err
 	}
 
-	return uc.tm.RunRepeatableRead(ctx, func(ctx context.Context) error {
+	return uc.tm.Unwrap(uc.tm.RunRepeatableRead(ctx, func(ctx context.Context) error {
 		group := domain.Group{
 			Title: param.Group,
 		}
@@ -68,7 +68,7 @@ func (uc Song) Create(ctx context.Context, param dto.CreateSongParam) error {
 			Text:        domain.Text(info.Text),
 			ReleaseDate: info.ReleaseDate,
 		})
-	})
+	}))
 }
 
 func (uc Song) Get(ctx context.Context, param dto.GetSongsParam) ([]domain.Song, error) {
