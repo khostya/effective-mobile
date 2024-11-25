@@ -29,7 +29,7 @@ func ScanALL[T any](ctx context.Context, query sq.SelectBuilder, db transactor.Q
 		return nil, err
 	}
 
-	var records []T
+	var records = make([]T, 0)
 	if err := pgxscan.Select(ctx, db, &records, rawQuery, args...); err != nil {
 		return nil, err
 	}

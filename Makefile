@@ -23,7 +23,7 @@ down-postgres:
 
 .PHONY: .up-dev
 up-dev:
-	${COMPOSE_DEV} up -d --build postgres migrate-server service
+	${COMPOSE_DEV} up -d --build postgres migrate-server service docs
 
 .PHONY: .down-dev
 down-dev:

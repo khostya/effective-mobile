@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 func TestServer_Get(t *testing.T) {
@@ -16,10 +17,12 @@ func TestServer_Get(t *testing.T) {
 
 	type (
 		input struct {
-			page  string
-			size  string
-			group string
-			song  string
+			page           string
+			size           string
+			group          string
+			song           string
+			releaseDateLte string
+			releaseDateGte string
 		}
 		test struct {
 			name   string
@@ -33,10 +36,12 @@ func TestServer_Get(t *testing.T) {
 		{
 			name: "ok",
 			input: input{
-				group: gofakeit.UUID(),
-				song:  gofakeit.UUID(),
-				page:  "1",
-				size:  "3",
+				group:          gofakeit.UUID(),
+				song:           gofakeit.UUID(),
+				page:           "1",
+				size:           "3",
+				releaseDateGte: time.Now().Format(time.DateOnly),
+				releaseDateLte: time.Now().Format(time.DateOnly),
 			},
 			code: http.StatusOK,
 			mockFn: func(m mocks) {
@@ -44,6 +49,34 @@ func TestServer_Get(t *testing.T) {
 					Get(gomock.Any(), gomock.Any()).
 					Return(nil, nil).
 					Times(1)
+			},
+		},
+		{
+			name: "error page release_date_lte",
+			input: input{
+				group:          gofakeit.UUID(),
+				song:           gofakeit.UUID(),
+				page:           "1",
+				size:           "3",
+				releaseDateGte: time.Now().Format(time.DateOnly),
+				releaseDateLte: "Gweg",
+			},
+			code: http.StatusBadRequest,
+			mockFn: func(m mocks) {
+			},
+		},
+		{
+			name: "error page release_date_gte",
+			input: input{
+				group:          gofakeit.UUID(),
+				song:           gofakeit.UUID(),
+				page:           "1",
+				size:           "3",
+				releaseDateGte: "GFg",
+				releaseDateLte: time.Now().Format(time.DateOnly),
+			},
+			code: http.StatusBadRequest,
+			mockFn: func(m mocks) {
 			},
 		},
 		{
@@ -91,12 +124,15 @@ func TestServer_Get(t *testing.T) {
 
 			r := httptest.NewRequest("GET", "http://localhost/", nil)
 			chiCtx := chi.NewRouteContext()
-			chiCtx.URLParams.Add(songParam, tt.input.song)
-			chiCtx.URLParams.Add(groupParam, tt.input.group)
 
 			q := r.URL.Query()
 			q.Set(pageParam, tt.input.page)
 			q.Set(sizeParam, tt.input.size)
+			q.Set(songParam, tt.input.song)
+			q.Set(groupParam, tt.input.group)
+			q.Set(releaseDateGteParam, tt.input.releaseDateGte)
+			q.Set(releaseDateLteParam, tt.input.releaseDateLte)
+
 			r.URL.RawQuery = q.Encode()
 
 			r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, chiCtx))

@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	"testing"
+	"time"
 )
 
 type SongsTestSuite struct {
@@ -29,7 +30,6 @@ func TestSongs(t *testing.T) {
 }
 
 func (s *SongsTestSuite) SetupSuite() {
-	s.T().Parallel()
 	s.transactor = transactor.NewTransactionManager(db.GetPool())
 	s.songRepo = repo.NewSongRepo(s.transactor)
 	s.groupRepo = repo.NewGroupRepo(s.transactor)
@@ -37,18 +37,18 @@ func (s *SongsTestSuite) SetupSuite() {
 }
 
 func (s *SongsTestSuite) TestCreate() {
-	_ = s.create(gofakeit.UUID(), gofakeit.UUID())
+	_ = s.create(gofakeit.UUID(), gofakeit.UUID(), time.Now())
 }
 
 func (s *SongsTestSuite) TestCreateDuplicateError() {
-	song := s.create(gofakeit.UUID(), gofakeit.UUID())
+	song := s.create(gofakeit.UUID(), gofakeit.UUID(), time.Now())
 
 	err := s.songRepo.Create(s.ctx, song)
 	require.ErrorIs(s.T(), err, repoerr.ErrDuplicate)
 }
 
 func (s *SongsTestSuite) TestGetByID() {
-	song := s.create(gofakeit.UUID(), gofakeit.UUID())
+	song := s.create(gofakeit.UUID(), gofakeit.UUID(), time.Now())
 
 	actual, err := s.songRepo.GetByID(s.ctx, song.ID)
 
@@ -57,7 +57,7 @@ func (s *SongsTestSuite) TestGetByID() {
 }
 
 func (s *SongsTestSuite) TestDelete() {
-	song := s.create(gofakeit.UUID(), gofakeit.UUID())
+	song := s.create(gofakeit.UUID(), gofakeit.UUID(), time.Now())
 
 	err := s.songRepo.Delete(s.ctx, song.ID)
 	require.NoError(s.T(), err)
@@ -72,7 +72,7 @@ func (s *SongsTestSuite) TestDeleteNotFound() {
 }
 
 func (s *SongsTestSuite) TestUpdate() {
-	song := s.create(gofakeit.UUID(), gofakeit.UUID())
+	song := s.create(gofakeit.UUID(), gofakeit.UUID(), time.Now())
 
 	randomString := uuid.New().String()
 	err := s.songRepo.Update(s.ctx, dto.UpdateSongParam{
@@ -122,8 +122,10 @@ func (s *SongsTestSuite) TestUpdateNotFound() {
 }
 
 func (s *SongsTestSuite) TestGet() {
-	_ = s.create("song1", "group")
-	_ = s.create("song2", "group")
+	truncate()
+
+	_ = s.create("song1", "group", time.Now())
+	song2 := s.create("song2", "group", time.Now().Add(time.Hour))
 
 	songs, err := s.songRepo.Get(s.ctx, dto.GetSongsParam{
 		Group: "group",
@@ -145,12 +147,31 @@ func (s *SongsTestSuite) TestGet() {
 	})
 	require.NoError(s.T(), err)
 	require.Len(s.T(), songs, 1)
+
+	t := time.Now().Add(time.Hour * 24 * 365)
+	songs, err = s.songRepo.Get(s.ctx, dto.GetSongsParam{
+		ReleaseDateGte: &t,
+	})
+	require.NoError(s.T(), err)
+	require.Len(s.T(), songs, 0)
+
+	songs, err = s.songRepo.Get(s.ctx, dto.GetSongsParam{
+		ReleaseDateLte: &t,
+	})
+	require.NoError(s.T(), err)
+	require.Len(s.T(), songs, 2)
+
+	songs, err = s.songRepo.Get(s.ctx, dto.GetSongsParam{
+		ReleaseDateGte: &song2.ReleaseDate,
+	})
+	require.NoError(s.T(), err)
+	require.Len(s.T(), songs, 1)
 }
 
-func (s *SongsTestSuite) create(songTitle string, groupTitle string) domain.Song {
+func (s *SongsTestSuite) create(songTitle string, groupTitle string, releaseDate time.Time) domain.Song {
 	group := s.createGroup(groupTitle)
 
-	song := NewSong(songTitle, group)
+	song := NewSong(songTitle, group, releaseDate)
 
 	err := s.songRepo.Create(s.ctx, song)
 	require.NoError(s.T(), err)

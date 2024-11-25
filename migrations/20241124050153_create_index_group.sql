@@ -5,5 +5,5 @@ create index songs_group_title_idx on effective.songs using btree (song);
 
 -- +goose Down
 -- +goose StatementBegin
-drop index songs_group_title_idx;
+drop index effective.songs_group_title_idx;
 -- +goose StatementEnd

@@ -13,14 +13,14 @@ const (
 	url = "https://github.com/khostya/effective-mobile"
 )
 
-func NewSong(songTitle string, group domain.Group) domain.Song {
+func NewSong(songTitle string, group domain.Group, date time.Time) domain.Song {
 	return domain.Song{
 		ID:          uuid.New(),
 		Song:        songTitle,
 		Group:       &group,
 		Link:        url,
 		Text:        domain.Text(gofakeit.UUID()),
-		ReleaseDate: time.Now(),
+		ReleaseDate: date,
 	}
 }
 

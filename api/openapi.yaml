@@ -68,6 +68,18 @@ paths:
           description: Internal server error
     get:
       parameters:
+        - name: release_date_gte
+          in: query
+          required: false
+          schema:
+            type: string
+          example: "2006-01-02"
+        - name: release_date_lte
+          in: query
+          required: false
+          schema:
+            type: string
+          example: "2006-01-02"
         - name: group
           in: query
           required: false

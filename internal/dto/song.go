@@ -18,10 +18,12 @@ type (
 	}
 
 	GetSongsParam struct {
-		Page  *Page
-		Song  string
-		Group string
-		Link  string
+		Page           *Page
+		Song           string
+		Group          string
+		Link           string
+		ReleaseDateGte *time.Time
+		ReleaseDateLte *time.Time
 	}
 
 	UpdateSongParam struct {

@@ -22,9 +22,12 @@ func TestMain(m *testing.M) {
 	db = postgresql.NewFromEnv()
 
 	code := m.Run()
-
-	db.TruncateTable(context.Background(), groupsTable, songsTable)
+	truncate()
 	db.Close()
 
 	os.Exit(code)
+}
+
+func truncate() {
+	db.TruncateTable(context.Background(), groupsTable, songsTable)
 }

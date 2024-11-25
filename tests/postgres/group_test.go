@@ -24,7 +24,6 @@ func TestGroup(t *testing.T) {
 }
 
 func (s *GroupTestSuite) SetupSuite() {
-	s.T().Parallel()
 	s.transactor = transactor.NewTransactionManager(db.GetPool())
 	s.groupRepo = repo.NewGroupRepo(s.transactor)
 	s.ctx = context.Background()

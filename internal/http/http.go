@@ -81,12 +81,14 @@ func logging(next http.Handler) http.Handler {
 }
 
 const (
-	pageParam  = "page"
-	sizeParam  = "size"
-	idParam    = "id"
-	songParam  = "song"
-	groupParam = "group"
-	linkParam  = "link"
+	pageParam           = "page"
+	sizeParam           = "size"
+	idParam             = "id"
+	songParam           = "song"
+	groupParam          = "group"
+	linkParam           = "link"
+	releaseDateGteParam = "release_date_gte"
+	releaseDateLteParam = "release_date_lte"
 )
 
 func parsePage(r *http.Request) (dto.Page, error) {

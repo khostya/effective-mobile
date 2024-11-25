@@ -61,7 +61,7 @@ func NewDomainSong(song Song) domain.Song {
 }
 
 func NewDomainSongs(songs []Song) []domain.Song {
-	var res []domain.Song
+	var res []domain.Song = make([]domain.Song, 0)
 
 	for _, song := range songs {
 		res = append(res, NewDomainSong(song))
