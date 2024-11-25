@@ -7,6 +7,7 @@ import (
 	"github.com/khostya/effective-mobile/internal/dto"
 	"github.com/khostya/effective-mobile/internal/http/api"
 	"net/http"
+	"strings"
 )
 
 func (s *server) Put(w http.ResponseWriter, r *http.Request) {
@@ -23,11 +24,16 @@ func (s *server) Put(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var text = make([]string, 0)
+	if req.Text != nil {
+		text = strings.Split(*req.Text, "\n\n")
+	}
+
 	err = s.useCases.Song.Update(r.Context(), dto.UpdateSongParam{
-		ID:   songID,
-		Song: req.Song,
-		Link: req.Link,
-		Text: req.Text,
+		ID:     songID,
+		Song:   req.Song,
+		Link:   req.Link,
+		Verses: text,
 	})
 	if err != nil {
 		s.error(w, r, http.StatusInternalServerError, err)

@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/khostya/effective-mobile/internal/domain"
 	"github.com/khostya/effective-mobile/internal/dto"
+	"strings"
 )
 
 type (
@@ -50,6 +51,7 @@ func (uc Song) Create(ctx context.Context, param dto.CreateSongParam) error {
 		return err
 	}
 
+	verses := strings.Split(info.Text, "\n\n")
 	return uc.tm.Unwrap(uc.tm.RunRepeatableRead(ctx, func(ctx context.Context) error {
 		group := domain.Group{
 			Title: param.Group,
@@ -65,7 +67,7 @@ func (uc Song) Create(ctx context.Context, param dto.CreateSongParam) error {
 			Song:        param.Song,
 			Group:       &group,
 			Link:        info.Link,
-			Text:        domain.Text(info.Text),
+			Verses:      verses,
 			ReleaseDate: info.ReleaseDate,
 		})
 	}))
@@ -81,7 +83,7 @@ func (uc Song) GetByVerse(ctx context.Context, param dto.GetByVerseParam) ([]str
 		return nil, err
 	}
 
-	verses, err := song.Text.GetVerse(param.Page)
+	verses, err := song.Verses.GetVerse(param.Page)
 	if err == nil {
 		return verses, nil
 	}

@@ -19,7 +19,7 @@ func NewSong(songTitle string, group domain.Group, date time.Time) domain.Song {
 		Song:        songTitle,
 		Group:       &group,
 		Link:        url,
-		Text:        domain.Text(gofakeit.UUID()),
+		Verses:      []string{gofakeit.UUID()},
 		ReleaseDate: date,
 	}
 }

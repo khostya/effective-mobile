@@ -27,10 +27,10 @@ type (
 	}
 
 	UpdateSongParam struct {
-		ID   uuid.UUID
-		Song *string
-		Text *string
-		Link *string
+		ID     uuid.UUID
+		Song   *string
+		Verses []string
+		Link   *string
 	}
 
 	GetSongInfo struct {

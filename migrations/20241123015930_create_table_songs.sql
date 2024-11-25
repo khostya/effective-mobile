@@ -6,7 +6,7 @@ create table if not exists effective.songs
     song         varchar(400)  not null,
     group_title  varchar(1000) not null references effective.groups (title),
     link         varchar(2000),
-    text       text,
+    verses       text[],
     release_date timestamp     not null,
     unique (song, group_title)
 );

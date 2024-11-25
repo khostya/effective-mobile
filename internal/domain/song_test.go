@@ -3,17 +3,16 @@ package domain
 import (
 	"github.com/khostya/effective-mobile/internal/dto"
 	"github.com/stretchr/testify/require"
-	"strings"
 	"testing"
 )
 
 func TestText_GetVerse(t *testing.T) {
 	verse1 := "ля-ля\nля"
 	verse2 := "тля-тл\nя-тля"
-	text := Text(strings.Join([]string{verse1, verse2}, "\n\n"))
+	text := Text([]string{verse1, verse2})
 
 	t.Run("one line", func(t *testing.T) {
-		text := Text("1")
+		text := Text([]string{"1"})
 		verses, err := text.GetVerse(dto.Page{
 			Page: 1,
 			Size: 10,
@@ -23,7 +22,7 @@ func TestText_GetVerse(t *testing.T) {
 	})
 
 	t.Run("error out of range", func(t *testing.T) {
-		text := Text("")
+		text := Text([]string{""})
 		verses, err := text.GetVerse(dto.Page{
 			Page: 4,
 			Size: 10,

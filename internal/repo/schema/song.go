@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/khostya/effective-mobile/internal/domain"
 	"github.com/khostya/effective-mobile/internal/dto"
+	"github.com/lib/pq"
 	"time"
 )
 
@@ -14,21 +15,21 @@ type (
 		Song        string           `db:"song"`
 		GroupTitle  string           `db:"group_title"`
 		Link        sql.Null[string] `db:"link"`
-		Text        sql.Null[string] `db:"text"`
+		Verses      []string         `db:"verses"`
 		ReleaseDate time.Time        `db:"release_date"`
 	}
 )
 
 func (f Song) SelectColumns() []string {
-	return []string{"id", "song", "group_title", "link", "text", "release_date"}
+	return []string{"id", "song", "group_title", "link", "verses", "release_date"}
 }
 
 func (f Song) InsertValues() []any {
-	return []any{f.ID, f.Song, f.GroupTitle, f.Link, f.Text, f.ReleaseDate}
+	return []any{f.ID, f.Song, f.GroupTitle, f.Link, pq.StringArray(f.Verses), f.ReleaseDate}
 }
 
 func (f Song) InsertColumns() []string {
-	return []string{"id", "song", "group_title", "link", "text", "release_date"}
+	return []string{"id", "song", "group_title", "link", "verses", "release_date"}
 }
 
 func NewSong(song domain.Song) Song {
@@ -42,7 +43,7 @@ func NewSong(song domain.Song) Song {
 		Song:        song.Song,
 		GroupTitle:  title,
 		Link:        nullIfDefault(song.Link),
-		Text:        nullIfDefault(string(song.Text)),
+		Verses:      song.Verses,
 		ReleaseDate: song.ReleaseDate,
 	}
 }
@@ -55,13 +56,13 @@ func NewDomainSong(song Song) domain.Song {
 			Title: song.GroupTitle,
 		},
 		Link:        song.Link.V,
-		Text:        domain.Text(song.Text.V),
+		Verses:      song.Verses,
 		ReleaseDate: song.ReleaseDate,
 	}
 }
 
 func NewDomainSongs(songs []Song) []domain.Song {
-	var res []domain.Song = make([]domain.Song, 0)
+	var res = make([]domain.Song, 0)
 
 	for _, song := range songs {
 		res = append(res, NewDomainSong(song))
@@ -71,7 +72,6 @@ func NewDomainSongs(songs []Song) []domain.Song {
 }
 
 func NewSongUpdate(param dto.UpdateSongParam) Song {
-	var text = sql.Null[string]{Valid: true}
 	var link = sql.Null[string]{Valid: true}
 	var song string
 	if param.Song != nil {
@@ -81,30 +81,33 @@ func NewSongUpdate(param dto.UpdateSongParam) Song {
 	if param.Link != nil {
 		link.V = *param.Link
 	}
-	if param.Text != nil {
-		text.V = *param.Text
-	}
 
 	return Song{
-		ID:   param.ID,
-		Song: song,
-		Link: link,
-		Text: text,
+		ID:     param.ID,
+		Song:   song,
+		Link:   link,
+		Verses: param.Verses,
 	}
 }
 
 func (f Song) UpdateColumns() []string {
-	res := []string{"link", "text"}
+	res := []string{"link"}
 	if f.Song != "" {
 		res = append(res, "song")
+	}
+	if f.Verses != nil {
+		res = append(res, "verses")
 	}
 	return res
 }
 
 func (f Song) UpdateValues() []any {
-	res := []any{f.Link, f.Text}
+	res := []any{f.Link}
 	if f.Song != "" {
 		res = append(res, f.Song)
+	}
+	if f.Verses != nil {
+		res = append(res, pq.StringArray(f.Verses))
 	}
 	return res
 }

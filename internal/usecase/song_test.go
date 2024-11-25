@@ -360,7 +360,7 @@ func TestSong_GetByVerse(t *testing.T) {
 			mockFn: func(m mocks) {
 				m.mockSongRepository.EXPECT().
 					GetByID(gomock.Any(), gomock.Any()).
-					Return(domain.Song{}, nil).
+					Return(domain.Song{Verses: []string{"ля-ля-ля"}}, nil).
 					Times(1)
 			},
 		},

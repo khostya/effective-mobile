@@ -76,16 +76,16 @@ func (s *SongsTestSuite) TestUpdate() {
 
 	randomString := uuid.New().String()
 	err := s.songRepo.Update(s.ctx, dto.UpdateSongParam{
-		ID:   song.ID,
-		Song: &randomString,
-		Text: &randomString,
-		Link: &randomString,
+		ID:     song.ID,
+		Song:   &randomString,
+		Verses: []string{randomString},
+		Link:   &randomString,
 	})
 	require.NoError(s.T(), err)
 
 	song.Song = randomString
 	song.Link = randomString
-	song.Text = domain.Text(randomString)
+	song.Verses = []string{randomString}
 
 	actual, err := s.songRepo.GetByID(s.ctx, song.ID)
 	require.NoError(s.T(), err)
@@ -97,13 +97,11 @@ func (s *SongsTestSuite) TestUpdate() {
 	err = s.songRepo.Update(s.ctx, dto.UpdateSongParam{
 		ID:   song.ID,
 		Song: &empty,
-		Text: &empty,
 		Link: &empty,
 	})
 	require.NoError(s.T(), err)
 
 	song.Link = empty
-	song.Text = domain.Text(empty)
 
 	actual, err = s.songRepo.GetByID(s.ctx, song.ID)
 	require.NoError(s.T(), err)
@@ -113,10 +111,10 @@ func (s *SongsTestSuite) TestUpdate() {
 func (s *SongsTestSuite) TestUpdateNotFound() {
 	randomString := uuid.New().String()
 	err := s.songRepo.Update(s.ctx, dto.UpdateSongParam{
-		ID:   uuid.New(),
-		Song: &randomString,
-		Text: &randomString,
-		Link: &randomString,
+		ID:     uuid.New(),
+		Song:   &randomString,
+		Verses: []string{randomString},
+		Link:   &randomString,
 	})
 	require.ErrorIs(s.T(), err, repoerr.ErrNotFound)
 }
