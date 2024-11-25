@@ -6,6 +6,8 @@ import (
 	"errors"
 	"github.com/khostya/effective-mobile/internal/dto"
 	"github.com/khostya/effective-mobile/pkg/api"
+	"github.com/khostya/effective-mobile/pkg/log/sl"
+	"log/slog"
 	"net/http"
 	"time"
 )
@@ -29,6 +31,8 @@ func (s SongInfo) GetInfo(ctx context.Context, param dto.GetSongInfo) (*dto.Song
 		return nil, err
 	}
 	defer resp.Body.Close()
+
+	slog.Info("отправлен запрос в сторонний сервис", sl.URL(resp.Request.URL.String()), sl.Code(uint64(resp.StatusCode)))
 
 	info, err := api.ParseGetInfoResponse(resp)
 	if err != nil {
