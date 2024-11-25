@@ -47,7 +47,7 @@ func (s *server) Get(w http.ResponseWriter, r *http.Request) {
 
 func parseReleaseDate(q string) (*time.Time, error) {
 	if q == "" {
-		return nil, nil
+		return nil, nil //nolint
 	}
 
 	var date *time.Time
